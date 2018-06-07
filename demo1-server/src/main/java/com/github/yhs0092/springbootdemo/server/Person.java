@@ -7,6 +7,8 @@ public class Person {
 
   Address address;
 
+  Person child;
+
   public String getName() {
     return name;
   }
@@ -34,12 +36,22 @@ public class Person {
     return this;
   }
 
+  public Person getChild() {
+    return child;
+  }
+
+  public Person setChild(Person child) {
+    this.child = child;
+    return this;
+  }
+
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("Person{");
     sb.append("name='").append(name).append('\'');
     sb.append(", age=").append(age);
     sb.append(", address=").append(address);
+    sb.append(", child=").append(child);
     sb.append('}');
     return sb.toString();
   }

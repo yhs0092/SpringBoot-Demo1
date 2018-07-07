@@ -1,6 +1,10 @@
 package com.github.yhs0092.springbootdemo.server;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,6 +12,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -77,6 +82,12 @@ public class HelloService {
     return person.toString();
   }
 
+  @GetMapping("/testGenericParam")
+  public String testGenericParam(GenericHolder<Address> genericHolder) {
+    LOGGER.info("testGenericParam is called, genericHolder = [{}]", genericHolder);
+    return genericHolder.toString();
+  }
+
   @RequestMapping("/stringArrayInvoke")
   public String stringArrayInvoke() {
     final ArrayList<String> strings = new ArrayList<>();
@@ -105,5 +116,21 @@ public class HelloService {
     final ResponseEntity<String> responseEntity = restTemplate
         .getForEntity(basePath + "/stringMap?k1={k1}&k2={k2}", String.class, stringMap);
     return responseEntity.getStatusCodeValue() + ":" + responseEntity.getBody();
+  }
+
+  public static void main(String[] args) {
+    Method testGenericParam = null;
+    try {
+      testGenericParam = HelloService.class.getDeclaredMethod("testGenericParam", GenericHolder.class);
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    }
+
+    final Type[] genericParameterTypes = testGenericParam.getGenericParameterTypes();
+    System.out.println(Arrays.toString(genericParameterTypes));
+    ParameterizedType parameterizedType = (ParameterizedType) genericParameterTypes[0];
+    System.out.println(parameterizedType.getRawType());
+    System.out.println(parameterizedType.getOwnerType());
+    System.out.println(Arrays.toString(parameterizedType.getActualTypeArguments()));
   }
 }
